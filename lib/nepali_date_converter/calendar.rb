@@ -1,12 +1,14 @@
 require 'date'
+require 'yaml'
 
 module NepaliDateConverter
   class Calendar
     NEPALI_MONTHS            = %w(Baishakh Jestha Ashad Shrawan Bhadra Ashwin Kartik Mangshir Poush Magh Falgun Chaitra)
     NEPALI_MONTHS_DEVANAGARI = %w(बैशाख जेठ असार श्रावण भदौ आश्विन कार्तिक मंसिर पुष माघ फाल्गुन चैत्र)
     WEEK_DAYS                = %w(आइतबार सोमबार मंगलबार बुधवार बिहीबार शुक्रबार शनिबार)
-    
-    BS_CALENDAR = [
+
+    # Default BS_CALENDAR data (fallback)
+    BS_CALENDAR_DEFAULT = BS_CALENDAR = [
         [2000, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
         [2001, 31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
         [2002, 31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
@@ -98,8 +100,27 @@ module NepaliDateConverter
         [2088, 30, 31, 32, 32, 30, 31, 30, 30, 29, 30, 30, 30],
         [2089, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30],
         [2090, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30]
-    ]
-    
+  ]
+
+    # Load BS_CALENDAR dynamically from config or fallback to default
+    def self.load_bs_calendar
+      # Check if running in a Rails application
+      if defined?(Rails)
+        config_path = Rails.root.join('config', 'bs_calendar.yml')
+        if File.exist?(config_path)
+          YAML.load_file(config_path)
+        else
+          Rails.logger.warn("BS Calendar config file not found at #{config_path}. Using default BS_CALENDAR.")
+          BS_CALENDAR_DEFAULT
+        end
+      else
+        BS_CALENDAR_DEFAULT
+      end
+    end
+
+    # Define BS_CALENDAR as a constant, loaded dynamically
+    BS_CALENDAR = load_bs_calendar
+
     class << self
       # Return english day of week
       #

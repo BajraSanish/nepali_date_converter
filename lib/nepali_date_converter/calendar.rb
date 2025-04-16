@@ -8,7 +8,7 @@ module NepaliDateConverter
     WEEK_DAYS                = %w(आइतबार सोमबार मंगलबार बुधवार बिहीबार शुक्रबार शनिबार)
 
     # Default BS_CALENDAR data (fallback)
-    BS_CALENDAR_DEFAULT = [
+    BS_CALENDAR = [
         [2000, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
         [2001, 31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
         [2002, 31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
@@ -102,21 +102,11 @@ module NepaliDateConverter
         [2090, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30]
   ]
 
-    # Load BS_CALENDAR dynamically from config or fallback to default
-    def self.load_bs_calendar
-      if defined?(::BS_CALENDAR)
-        ::BS_CALENDAR
-        puts "=====================definned========================="
-      else
-        BS_CALENDAR_DEFAULT
-        puts "=====================BS_CALENDAR_DEFAULT========================="
-      end
-    end    
-
-    # Define BS_CALENDAR as a constant, loaded dynamically
-    BS_CALENDAR = load_bs_calendar
-
     class << self
+      def bs_calendar
+        @bs_calendar ||= load_dynamic_calendar || BS_CALENDAR
+      end
+
       # Return english day of week
       #
       # Example:
@@ -186,6 +176,30 @@ module NepaliDateConverter
           else
             return false
           end
+        end
+      end
+
+      private
+
+      def load_dynamic_calendar
+        path = Rails.root.join("config", "nepali_date_calendar.yml")
+        return unless File.exist?(path)
+
+        data = YAML.load_file(path)
+        parse_calendar(data)
+      rescue => e
+        Rails.logger.warn "[NepaliDateConverter] Failed to load dynamic calendar: #{e.message}"
+        nil
+      end
+
+      def parse_calendar(data)
+        return unless data.is_a?(Array)
+
+        # Optional: Validate structure here
+        data.map do |row|
+          year = row["year"]
+          months = row["months"]
+          [year, *months]
         end
       end
     end

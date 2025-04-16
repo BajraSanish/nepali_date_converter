@@ -54,7 +54,7 @@ module NepaliDateConverter
 
         # count nepali date from array
         while @total_eDays != 0
-          @a = NepaliDateConverter::Calendar::BS_CALENDAR[@i][@j]
+          @a = NepaliDateConverter::Calendar.bs_calendar[@i][@j]
           @total_nDays += 1   # count the days
           @day += 1           # count the days interms of 7 days
           if @total_nDays > @a
@@ -121,14 +121,14 @@ module NepaliDateConverter
         # count total days in-terms of year
         (@yy - @def_nyy).times do |i|
           for j in (1..12)
-            @total_nDays += NepaliDateConverter::Calendar::BS_CALENDAR[@k][j]
+            @total_nDays += NepaliDateConverter::Calendar.bs_calendar[@k][j]
           end
           @k += 1
         end
 
         # count total days in-terms of month
         for j in 1...@mm
-          @total_nDays += NepaliDateConverter::Calendar::BS_CALENDAR[@k][j]
+          @total_nDays += NepaliDateConverter::Calendar.bs_calendar[@k][j]
         end
 
         # count total days in-terms of date

@@ -105,7 +105,7 @@ module NepaliDateConverter
     # Load BS_CALENDAR dynamically from config or fallback to default
     def self.load_bs_calendar
       # Check if running in a Rails application
-      if defined?(Rails)
+      if defined?(Rails) && Rails.root
         config_path = Rails.root.join('config', 'bs_calendar.yml')
         if File.exist?(config_path)
           YAML.load_file(config_path)
@@ -114,6 +114,7 @@ module NepaliDateConverter
           BS_CALENDAR_DEFAULT
         end
       else
+        Rails.logger.warn("Rails environment not fully initialized or not in Rails context. Using default BS_CALENDAR.") if defined?(Rails)
         BS_CALENDAR_DEFAULT
       end
     end

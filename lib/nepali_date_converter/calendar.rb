@@ -8,7 +8,7 @@ module NepaliDateConverter
     WEEK_DAYS                = %w(आइतबार सोमबार मंगलबार बुधवार बिहीबार शुक्रबार शनिबार)
 
     # Default BS_CALENDAR data (fallback)
-    BS_CALENDAR_DEFAULT = BS_CALENDAR = [
+    BS_CALENDAR_DEFAULT = [
         [2000, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
         [2001, 31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
         [2002, 31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
@@ -104,20 +104,12 @@ module NepaliDateConverter
 
     # Load BS_CALENDAR dynamically from config or fallback to default
     def self.load_bs_calendar
-      # Check if running in a Rails application
-      if defined?(Rails) && Rails.root
-        config_path = Rails.root.join('config', 'bs_calendar.yml')
-        if File.exist?(config_path)
-          YAML.load_file(config_path)
-        else
-          Rails.logger.warn("BS Calendar config file not found at #{config_path}. Using default BS_CALENDAR.")
-          BS_CALENDAR_DEFAULT
-        end
+      if defined?(::BS_CALENDAR)
+        ::BS_CALENDAR
       else
-        Rails.logger.warn("Rails environment not fully initialized or not in Rails context. Using default BS_CALENDAR.") if defined?(Rails)
         BS_CALENDAR_DEFAULT
       end
-    end
+    end    
 
     # Define BS_CALENDAR as a constant, loaded dynamically
     BS_CALENDAR = load_bs_calendar

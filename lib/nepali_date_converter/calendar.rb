@@ -106,8 +106,10 @@ module NepaliDateConverter
     def self.load_bs_calendar
       if defined?(::BS_CALENDAR)
         ::BS_CALENDAR
+        puts "=====================definned========================="
       else
         BS_CALENDAR_DEFAULT
+        puts "=====================BS_CALENDAR_DEFAULT========================="
       end
     end    
 
